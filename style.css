@@ -139,6 +139,31 @@ button:hover {
     background: #2980b9;
 }
 
+/* Answer card styling */
+.answer-card {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: left;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.answer-card.hidden {
+    display: none;
+}
+
+.answer-item {
+    margin-bottom: 10px;
+}
+
+.answer-item h4 {
+    margin: 5px 0;
+}
+
 @media (max-width: 768px) {
     .game-container {
         flex-direction: column;
@@ -166,4 +191,14 @@ button:hover {
     .questions {
         width: 100%;
     }
+}
+
+.correct {
+    background-color: #d4edda; /* Light green */
+    color: #3bb143; /* Dark green text */
+}
+
+.incorrect {
+    background-color: #f8d7da; /* Light red */
+    color: #bc3946; /* Dark red text */
 }

@@ -1,7 +1,7 @@
 const clues = {
     across: [
         { number: 3, question: "Makanan pokok", answer: "NASI", row: 2, col: 7 },
-        { number: 7, question: "Raja Hutan", answer: "HARIMAU", row: 4, col: 1},
+        { number: 7, question: "Raja Hutan", answer: "HARIMAU", row: 4, col: 1 },
         { number: 8, question: "Buah yang mirip leci", answer: "RAMBUTAN", row: 5, col: 7 },
         { number: 10, question: "Alat musik petik", answer: "GITAR", row: 13, col: 7 },
         { number: 11, question: "Obat menolak angin", answer: "ANTANGIN", row: 9, col: 1 }
@@ -16,17 +16,12 @@ const clues = {
     ]
 };
 
-function createGrid() {
-    const crosswordContainer = document.querySelector(".crossword");
-    for (let i = 0; i < 12; i++) { 
-        for (let j = 0; j < 12; j++) {
-        }
-    }
-}
-
-
-
 let score = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
+    createGrid();
+    populateQuestions();
+});
 
 function createGrid() {
     const crosswordContainer = document.querySelector(".crossword");
@@ -99,11 +94,26 @@ function checkAnswers() {
     const maxScore = clues.across.reduce((sum, clue) => sum + clue.answer.length, 0) +
         clues.down.reduce((sum, clue) => sum + clue.answer.length, 0);
 
-    clues.across.forEach(clue => checkClue(clue, "across"));
-    clues.down.forEach(clue => checkClue(clue, "down"));
+    let allCorrect = true;
+
+    clues.across.forEach(clue => {
+        if (!checkClue(clue, "across")) {
+            allCorrect = false;
+        }
+    });
+    clues.down.forEach(clue => {
+        if (!checkClue(clue, "down")) {
+            allCorrect = false;
+        }
+    });
 
     const percentage = Math.round((score / maxScore) * 100);
     document.getElementById("score").textContent = `Skor: ${score} (${percentage}%)`;
+
+    // Show answer card if there are incorrect answers
+    if (!allCorrect) {
+        displayAnswerCard();
+    }
 }
 
 function checkClue(clue, direction) {
@@ -113,21 +123,42 @@ function checkClue(clue, direction) {
     for (let i = 0; i < answer.length; i++) {
         const cellRow = direction === "across" ? row : row + i;
         const cellCol = direction === "across" ? col + i : col;
-        const cell = document.querySelector(`.cell[data-row="${cellRow}"][data-col="${cellCol}"] input`);
+        const cellInput = document.querySelector(`.cell[data-row="${cellRow}"][data-col="${cellCol}"] input`);
 
-        if (cell && cell.value.toUpperCase() === answer[i]) {
-            score++;
-            cell.style.color = "#27ae60";
-        } else if (cell) {
-            cell.style.color = "#c0392b";
-            correct = false;
+        if (cellInput) {
+            if (cellInput.value.toUpperCase() === answer[i]) {
+                cellInput.classList.add("correct");
+                cellInput.classList.remove("incorrect");
+                score++;
+            } else {
+                cellInput.classList.add("incorrect");
+                cellInput.classList.remove("correct");
+                correct = false;
+            }
         }
     }
-
     return correct;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    createGrid();
-    populateQuestions();
-});
+function displayAnswerCard() {
+    const answerCard = document.getElementById("answer-card");
+    const answersContainer = document.getElementById("answers");
+    answersContainer.innerHTML = "";
+
+    // Generate answer list for both across and down clues
+    clues.across.forEach(clue => {
+        const answerItem = document.createElement("div");
+        answerItem.className = "answer-item";
+        answerItem.innerHTML = `<h4>${clue.number}. ${clue.question}</h4><p>Jawaban: ${clue.answer}</p>`;
+        answersContainer.appendChild(answerItem);
+    });
+
+    clues.down.forEach(clue => {
+        const answerItem = document.createElement("div");
+        answerItem.className = "answer-item";
+        answerItem.innerHTML = `<h4>${clue.number}. ${clue.question}</h4><p>Jawaban: ${clue.answer}</p>`;
+        answersContainer.appendChild(answerItem);
+    });
+
+    answerCard.classList.remove("hidden");
+}
